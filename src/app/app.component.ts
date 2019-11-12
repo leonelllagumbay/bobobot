@@ -19,7 +19,30 @@ import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angula
 
 import * as SpeechCommands from './src';
 
-import {hideCandidateWords, logToStatusDisplay, plotPredictions, populateCandidateWords, showCandidateWords} from './ui';
+import { hideCandidateWords, logToStatusDisplay, plotPredictions, populateCandidateWords, showCandidateWords } from './ui';
+import { NgxImageGalleryComponent, GALLERY_IMAGE, GALLERY_CONF } from 'ngx-image-gallery';
+
+const commands = {
+  LEFT: 'left',
+  RIGHT: 'right',
+  TOP: 'top',
+  BOTTOM: 'bottom',
+  YES: 'yes',
+  NO: 'no',
+  GO: 'go',
+  STOP: 'stop',
+  ZERO: 'zero',
+  ONE: 'one',
+  TWO: 'two',
+  THREE: 'three',
+  FOUR: 'four',
+  FIVE: 'five',
+  SIX: 'six',
+  SEVEN: 'seven',
+  EIGHT: 'eight',
+  NINE: 'nine',
+  TEN: 'ten'
+};
 
 @Component({
   selector: 'app-root',
@@ -47,11 +70,41 @@ export class AppComponent implements OnInit, AfterViewInit {
   startDisabled = true;
   stopDisabled = true;
 
-  ngOnInit() {
+  // get reference to gallery component
+  @ViewChild(NgxImageGalleryComponent) ngxImageGallery: NgxImageGalleryComponent;
+
+  // gallery configuration
+  conf: GALLERY_CONF = {
+    imageOffset: '0px',
+    showDeleteControl: false,
+    showImageTitle: false,
+  };
+
+  // gallery images
+  images: GALLERY_IMAGE[] = [
+    {
+      url: 'https://images.pexels.com/photos/669013/pexels-photo-669013.jpeg?w=1260',
+      altText: 'woman-in-black-blazer-holding-blue-cup',
+      title: 'woman-in-black-blazer-holding-blue-cup',
+      thumbnailUrl: 'https://images.pexels.com/photos/669013/pexels-photo-669013.jpeg?w=60'
+    },
+    {
+      url: 'https://images.pexels.com/photos/669006/pexels-photo-669006.jpeg?w=1260',
+      altText: 'two-woman-standing-on-the-ground-and-staring-at-the-mountain',
+      extUrl: 'https://www.pexels.com/photo/two-woman-standing-on-the-ground-and-staring-at-the-mountain-669006/',
+      thumbnailUrl: 'https://images.pexels.com/photos/669006/pexels-photo-669006.jpeg?w=60'
+    },
+  ];
+
+  constructor() {
 
   }
 
+  ngOnInit() {
+  }
+
   ngAfterViewInit() {
+
     logToStatusDisplay('Creating recognizer...', this.statusDisplay);
     this.recognizer = SpeechCommands.create('BROWSER_FFT');
 
@@ -81,6 +134,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   startButtonClick() {
     console.log('start button clicked', this.candidateWords);
+    this.openGallery(0);
     const activeRecognizer = this.transferRecognizer == null ? this.recognizer : this.transferRecognizer;
     populateCandidateWords(activeRecognizer.wordLabels(), this.candidateWords.nativeElement);
 
@@ -91,6 +145,7 @@ export class AppComponent implements OnInit, AfterViewInit {
               this.predictionCanvas, activeRecognizer.wordLabels(), result.scores,
               3, suppressionTimeMillis);
           console.log('result', topWord);
+          this.moveGallery(topWord);
         },
         {
           includeSpectrogram: true,
@@ -122,5 +177,72 @@ export class AppComponent implements OnInit, AfterViewInit {
         logToStatusDisplay(
             'ERROR: Failed to stop streaming display: ' + err.message);
       });
+  }
+
+
+  // Gallery functions
+  // METHODS
+  // open gallery
+  openGallery(index: number = 0) {
+    this.ngxImageGallery.open(index);
+  }
+
+  moveGallery(topWord: string) {
+    if (topWord === commands.LEFT) {
+      this.prevImage();
+    } else if (topWord === commands.RIGHT) {
+      this.nextImage();
+    } else if (topWord === commands.STOP) {
+      this.closeGallery();
+    } else if (topWord === commands.EIGHT) {
+      this.openGallery();
+    }
+  }
+
+  // close gallery
+  closeGallery() {
+    this.ngxImageGallery.close();
+  }
+
+  // set new active(visible) image in gallery
+  newImage(index: number = 0) {
+    this.ngxImageGallery.setActiveImage(index);
+  }
+
+  // next image in gallery
+  nextImage() {
+    this.ngxImageGallery.next();
+  }
+
+  // prev image in gallery
+  prevImage() {
+    this.ngxImageGallery.prev();
+  }
+
+  /**************************************************/
+
+  // EVENTS
+  // callback on gallery opened
+  galleryOpened(index) {
+    console.log('Gallery opened at index ', index);
+  }
+
+  // callback on gallery closed
+  galleryClosed() {
+    console.log('Gallery closed.');
+  }
+
+  // callback on gallery image clicked
+  galleryImageClicked(index) {
+    console.log('Gallery image clicked with index ', index);
+  }
+  // callback on gallery image changed
+  galleryImageChanged(index) {
+    console.log('Gallery image changed to index ', index);
+  }
+
+  // callback on user clicked delete button
+  deleteImage(index) {
+    console.log('Delete image at index ', index);
   }
 }

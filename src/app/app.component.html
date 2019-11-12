@@ -10,4 +10,14 @@
   <div id="candidate-words" #candidateWords class="candidate-words-hidden"></div>
 </div>
 
+<ngx-image-gallery 
+  [images]="images"
+  [conf]="conf"
+  (onOpen)="galleryOpened($event)"
+  (onClose)="galleryClosed()"
+  (onImageClicked)="galleryImageClicked($event)"
+  (onImageChange)="galleryImageChanged($event)"
+  (onDelete)="deleteImage($event)"
+></ngx-image-gallery>
+
 <router-outlet></router-outlet>
