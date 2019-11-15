@@ -21,6 +21,7 @@ import * as SpeechCommands from './src';
 
 import { hideCandidateWords, logToStatusDisplay, plotPredictions, populateCandidateWords, showCandidateWords } from './ui';
 import { NgxImageGalleryComponent, GALLERY_IMAGE, GALLERY_CONF } from 'ngx-image-gallery';
+import { CONTEXT } from '@angular/core/src/render3/interfaces/view';
 
 const commands = {
   LEFT: 'left',
@@ -63,12 +64,17 @@ export class AppComponent implements OnInit, AfterViewInit {
   predictionCanvas: any;
   @ViewChild('statusDisplay')
   statusDisplay: any;
+  @ViewChild('player')
+  player: ElementRef;
+  @ViewChild('canvas')
+  canvas: ElementRef;
   recognizer;
   transferWords;
   transferRecognizer;
   transferDurationMultiplier;
   startDisabled = true;
   stopDisabled = true;
+  context: any;
 
   // get reference to gallery component
   @ViewChild(NgxImageGalleryComponent) ngxImageGallery: NgxImageGalleryComponent;
@@ -130,6 +136,27 @@ export class AppComponent implements OnInit, AfterViewInit {
       logToStatusDisplay(
           'Failed to load model for recognizer: ' + err.message, this.statusDisplay);
     });
+
+    // setup video player
+    const plr = this.player.nativeElement;
+    const  constraints = {
+      video: true
+    };
+
+    navigator.mediaDevices.getUserMedia(constraints)
+      .then((stream: any) => {
+        plr.srcObject = stream;
+    });
+
+    const canvas = this.canvas.nativeElement;
+    this.context = canvas.getContext('2d');
+  }
+
+  capture() {
+    console.log('cpature');
+    const canvas = this.canvas.nativeElement;
+    const context = canvas.getContext('2d');
+    context.drawImage(this.player.nativeElement, 0, 0, canvas.width, canvas.height);
   }
 
   startButtonClick() {

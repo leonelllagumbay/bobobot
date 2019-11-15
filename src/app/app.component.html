@@ -10,6 +10,12 @@
   <div id="candidate-words" #candidateWords class="candidate-words-hidden"></div>
 </div>
 
+<!-- Video camera -->
+<video id="player" #player controls autoplay></video>
+<button (click)="capture()">Capture</button>
+<canvas #canvas width=520 height=440></canvas>
+<!-- End Video camera -->
+
 <ngx-image-gallery 
   [images]="images"
   [conf]="conf"
