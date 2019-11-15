@@ -22,6 +22,9 @@ import * as SpeechCommands from './src';
 import { hideCandidateWords, logToStatusDisplay, plotPredictions, populateCandidateWords, showCandidateWords } from './ui';
 import { NgxImageGalleryComponent, GALLERY_IMAGE, GALLERY_CONF } from 'ngx-image-gallery';
 import { CONTEXT } from '@angular/core/src/render3/interfaces/view';
+import { HttpClient, HttpHeaders, HttpResponse  } from '@angular/common/http';
+
+const imageUrlSrc = 'http://192.168.43.226:8080/';
 
 const commands = {
   LEFT: 'left',
@@ -51,6 +54,11 @@ const commands = {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, AfterViewInit {
+  private static readonly httpOptionsDefault = {
+    headers: new HttpHeaders({
+      Authorization: `Client-ID cff8420b96cded9`
+    })
+  };
   title = 'Bobobot';
   @ViewChild('start')
   startButton: any;
@@ -75,6 +83,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   startDisabled = true;
   stopDisabled = true;
   context: any;
+  clientId = 'cff8420b96cded9';
 
   // get reference to gallery component
   @ViewChild(NgxImageGalleryComponent) ngxImageGallery: NgxImageGalleryComponent;
@@ -88,25 +97,14 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   // gallery images
   images: GALLERY_IMAGE[] = [
-    {
-      url: 'https://images.pexels.com/photos/669013/pexels-photo-669013.jpeg?w=1260',
-      altText: 'woman-in-black-blazer-holding-blue-cup',
-      title: 'woman-in-black-blazer-holding-blue-cup',
-      thumbnailUrl: 'https://images.pexels.com/photos/669013/pexels-photo-669013.jpeg?w=60'
-    },
-    {
-      url: 'https://images.pexels.com/photos/669006/pexels-photo-669006.jpeg?w=1260',
-      altText: 'two-woman-standing-on-the-ground-and-staring-at-the-mountain',
-      extUrl: 'https://www.pexels.com/photo/two-woman-standing-on-the-ground-and-staring-at-the-mountain-669006/',
-      thumbnailUrl: 'https://images.pexels.com/photos/669006/pexels-photo-669006.jpeg?w=60'
-    },
   ];
 
-  constructor() {
+  constructor(private readonly _http: HttpClient) {
 
   }
 
   ngOnInit() {
+    this.getImages();
   }
 
   ngAfterViewInit() {
@@ -157,6 +155,40 @@ export class AppComponent implements OnInit, AfterViewInit {
     const canvas = this.canvas.nativeElement;
     const context = canvas.getContext('2d');
     context.drawImage(this.player.nativeElement, 0, 0, canvas.width, canvas.height);
+
+
+    const d = canvas.toDataURL('image/png');
+    console.log('base url', d);
+    // test http
+    // this.getImages().subscribe((res: any) => {
+    //   console.log('res', res);
+    // });
+  }
+
+  upload() {
+    const canvas = this.canvas.nativeElement;
+    const d = canvas.toDataURL('image/png');
+    this.uploadImage(d).subscribe((res: any) => {
+      console.log('upload result', res);
+    });
+  }
+
+  uploadImage(base64: any) {
+    return this._http.post<any>(imageUrlSrc + 'images/upload', base64);
+  }
+
+  getImages() {
+    this._http.get<any>(imageUrlSrc + 'images/list').subscribe((images: any) => {
+      this.images = [...images];
+    });
+  }
+
+  applyFrame() {
+    const baseImage = new Image();
+    baseImage.src = 'assets/images/erni_had.png';
+    const canvas = this.canvas.nativeElement;
+    const context = canvas.getContext('2d');
+    context.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
   }
 
   startButtonClick() {

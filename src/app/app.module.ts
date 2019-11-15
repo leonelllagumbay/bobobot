@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxImageGalleryModule } from 'ngx-image-gallery';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import { NgxImageGalleryModule } from 'ngx-image-gallery';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgxImageGalleryModule
+    NgxImageGalleryModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

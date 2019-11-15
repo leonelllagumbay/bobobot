@@ -1,6 +1,9 @@
 <div class="start-stop">
   <button id="start" #start (click)="startButtonClick()" [disabled]="startDisabled">Start</button>
   <button id="stop" #stop (click)="stopButtonClick()" [disabled]="stopDisabled">Stop</button>
+  <button (click)="capture()">Capture</button>
+  <button (click)="upload()">Upload</button>
+  <button (click)="applyFrame()">Add Frame</button>
 </div>
 <div class='main-model'>
   <div class="settings">
@@ -10,10 +13,25 @@
   <div id="candidate-words" #candidateWords class="candidate-words-hidden"></div>
 </div>
 
+<div class="frame-container">
 <!-- Video camera -->
-<video id="player" #player controls autoplay></video>
-<button (click)="capture()">Capture</button>
-<canvas #canvas width=520 height=440></canvas>
+  <div class="player-control">
+    <video id="player" #player controls autoplay></video>
+  </div>
+  <div class="canvas-input">
+    <canvas #canvas width=520 height=440></canvas>
+  </div>
+
+<!-- Frames -->
+  <div class="frame-one">One</div>
+  <div class="frame-two">Two</div>
+  <div class="frame-three">Three</div>
+  <div class="frame-four">Four</div>
+  <div class="frame-five">Five</div>
+  <div class="frame=six">Six</div>
+</div>
+<!-- End Frames-->
+
 <!-- End Video camera -->
 
 <ngx-image-gallery 
