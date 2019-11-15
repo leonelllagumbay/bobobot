@@ -1,5 +1,5 @@
 <div class="start-stop">
-  <button id="start" #start (click)="startButtonClick()" [disabled]="startDisabled">Start</button>
+  <button id="start" #start (click)="initTensor()" [disabled]="startDisabled">Start</button>
   <button id="stop" #stop (click)="stopButtonClick()" [disabled]="stopDisabled">Stop</button>
   <button (click)="capture()">Capture</button>
   <button (click)="upload()">Upload</button>
@@ -24,12 +24,12 @@
 
   <div class="frame-selection">
     <!-- Frames -->
-    <div class="frame-one" [ngClass]="{'highlighted': currentFrame === 1}"></div>
-    <div class="frame-two" [ngClass]="{'highlighted': currentFrame === 2}"></div>
-    <div class="frame-three" [ngClass]="{'highlighted': currentFrame === 3}"></div>
-    <div class="frame-four" [ngClass]="{'highlighted': currentFrame === 4}"></div>
-    <div class="frame-five" [ngClass]="{'highlighted': currentFrame === 5}"></div>
-    <div class="frame-six" [ngClass]="{'highlighted': currentFrame === 6}"></div>
+    <div class="frame-one" (click)="onFrameClick(1)" [ngClass]="{'highlighted': currentFrame === 1}"></div>
+    <div class="frame-two" (click)="onFrameClick(2)" [ngClass]="{'highlighted': currentFrame === 2}"></div>
+    <div class="frame-three" (click)="onFrameClick(3)" [ngClass]="{'highlighted': currentFrame === 3}"></div>
+    <div class="frame-four" (click)="onFrameClick(4)" [ngClass]="{'highlighted': currentFrame === 4}"></div>
+    <div class="frame-five" (click)="onFrameClick(5)" [ngClass]="{'highlighted': currentFrame === 5}"></div>
+    <div class="frame-six" (click)="onFrameClick(6)" [ngClass]="{'highlighted': currentFrame === 6}"></div>
   </div>
 </div>
 <!-- End Frames-->

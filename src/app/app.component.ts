@@ -28,11 +28,12 @@ const imageUrlSrc = 'http://192.168.43.226:8080/';
 
 const frameImages = [
   'assets/images/erni_had.png',
-  'assets/images/erni_had2.png',
-  'assets/images/erni_had3.png',
-  'assets/images/erni_had4.png',
-  'assets/images/erni_had5.png',
-  'assets/images/erni_had6.png',
+  'assets/images/erni_had.png',
+  'assets/images/xmas.png',
+  'assets/images/frame3.png',
+  'assets/images/frame4.png',
+  'assets/images/frame5.png',
+  'assets/images/xmas.png',
 ];
 
 const commands = {
@@ -107,7 +108,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   };
 
   // gallery images
-  images: GALLERY_IMAGE[] = [
+  images: GALLERY_IMAGE[] = [{
+    url: 'test',
+    thumbnailUrl: 'testT'
+  }
   ];
 
   constructor(private readonly _http: HttpClient) {
@@ -115,7 +119,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.getImages();
+    // this.getImages();
   }
 
   ngAfterViewInit() {
@@ -190,6 +194,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     };
     this.uploadImage(base).subscribe((res: any) => {
       console.log('upload result', res);
+      this.startButtonClick();
     });
   }
 
@@ -198,9 +203,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   getImages() {
-    this._http.get<any>(imageUrlSrc + 'images/list').subscribe((images: any) => {
-      this.images = [...images];
-    });
+    return this._http.get<any>(imageUrlSrc + 'images/list');
   }
 
   applyFrame(index: number) {
@@ -211,7 +214,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     context.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
   }
 
-  startButtonClick() {
+  initTensor() {
     console.log('start button clicked', this.candidateWords);
     this.openGallery(0);
     const activeRecognizer = this.transferRecognizer == null ? this.recognizer : this.transferRecognizer;
@@ -243,6 +246,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     });
   }
 
+  startButtonClick() {
+    this.getImages().subscribe((images: any) => {
+      this.images = [...images];
+      setTimeout(() => {
+        this.openGallery(0);
+      }, 200);
+    });
+  }
+
   stopButtonClick() {
     const activeRecognizer = this.transferRecognizer == null ? this.recognizer : this.transferRecognizer;this.startButton.disabled = false;
     activeRecognizer.stopListening()
@@ -262,7 +274,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   // Gallery functions
   // METHODS
   // open gallery
-  openGallery(index: number = 0) {
+  openGallery(index: number) {
     this.ngxImageGallery.open(index);
   }
 
@@ -292,6 +304,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     } else if (topWord === commands.YES) {
       this.upload();
     }
+  }
+
+  onFrameClick(index: number) {
+    this.currentFrame = index;
+    this.recapture();
+    this.applyFrame(index);
   }
 
   // close gallery
