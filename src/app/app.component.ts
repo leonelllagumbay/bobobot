@@ -26,11 +26,20 @@ import { HttpClient, HttpHeaders, HttpResponse  } from '@angular/common/http';
 
 const imageUrlSrc = 'http://192.168.43.226:8080/';
 
+const frameImages = [
+  'assets/images/erni_had.png',
+  'assets/images/erni_had2.png',
+  'assets/images/erni_had3.png',
+  'assets/images/erni_had4.png',
+  'assets/images/erni_had5.png',
+  'assets/images/erni_had6.png',
+];
+
 const commands = {
   LEFT: 'left',
   RIGHT: 'right',
-  TOP: 'top',
-  BOTTOM: 'bottom',
+  UP: 'up',
+  DOWN: 'down',
   YES: 'yes',
   NO: 'no',
   GO: 'go',
@@ -84,6 +93,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   stopDisabled = true;
   context: any;
   clientId = 'cff8420b96cded9';
+  currentFrame = 0;
+  originBase64: any;
 
   // get reference to gallery component
   @ViewChild(NgxImageGalleryComponent) ngxImageGallery: NgxImageGalleryComponent;
@@ -150,14 +161,20 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.context = canvas.getContext('2d');
   }
 
+  recapture() {
+    const image = new Image();
+    image.src = this.originBase64;
+    this.context.drawImage(image, 0, 0);
+  }
+
   capture() {
-    console.log('cpature');
     const canvas = this.canvas.nativeElement;
-    const context = canvas.getContext('2d');
-    context.drawImage(this.player.nativeElement, 0, 0, canvas.width, canvas.height);
+    this.context = canvas.getContext('2d');
+    this.context.drawImage(this.player.nativeElement, 0, 0, canvas.width, canvas.height);
 
 
     const d = canvas.toDataURL('image/png');
+    this.originBase64 = d;
     console.log('base url', d);
     // test http
     // this.getImages().subscribe((res: any) => {
@@ -168,13 +185,16 @@ export class AppComponent implements OnInit, AfterViewInit {
   upload() {
     const canvas = this.canvas.nativeElement;
     const d = canvas.toDataURL('image/png');
-    this.uploadImage(d).subscribe((res: any) => {
+    const base = {
+      base64: d
+    };
+    this.uploadImage(base).subscribe((res: any) => {
       console.log('upload result', res);
     });
   }
 
-  uploadImage(base64: any) {
-    return this._http.post<any>(imageUrlSrc + 'images/upload', base64);
+  uploadImage(base: any) {
+    return this._http.post<any>(imageUrlSrc + 'images/upload', base);
   }
 
   getImages() {
@@ -183,9 +203,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     });
   }
 
-  applyFrame() {
+  applyFrame(index: number) {
     const baseImage = new Image();
-    baseImage.src = 'assets/images/erni_had.png';
+    baseImage.src = frameImages[index];
     const canvas = this.canvas.nativeElement;
     const context = canvas.getContext('2d');
     context.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
@@ -255,6 +275,18 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.closeGallery();
     } else if (topWord === commands.EIGHT) {
       this.openGallery();
+    } else if (topWord === commands.DOWN) {
+      if (this.currentFrame !== 6) {
+        this.currentFrame += 1;
+        this.recapture();
+        this.applyFrame(this.currentFrame);
+      }
+    } else if (topWord === commands.UP) {
+      if (this.currentFrame !== 1) {
+        this.currentFrame -= 1;
+        this.recapture();
+        this.applyFrame(this.currentFrame);
+      }
     }
   }
 
