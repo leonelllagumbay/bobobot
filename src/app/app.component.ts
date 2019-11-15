@@ -216,7 +216,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   initTensor() {
     console.log('start button clicked', this.candidateWords);
-    this.openGallery(0);
     const activeRecognizer = this.transferRecognizer == null ? this.recognizer : this.transferRecognizer;
     populateCandidateWords(activeRecognizer.wordLabels(), this.candidateWords.nativeElement);
 
@@ -286,7 +285,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     } else if (topWord === commands.STOP) {
       this.closeGallery();
     } else if (topWord === commands.EIGHT) {
-      this.openGallery();
+      this.startButtonClick();
     } else if (topWord === commands.DOWN) {
       if (this.currentFrame !== 6) {
         this.currentFrame += 1;
