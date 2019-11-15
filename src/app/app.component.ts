@@ -287,6 +287,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.recapture();
         this.applyFrame(this.currentFrame);
       }
+    } else if (topWord === commands.THREE) {
+      this.capture();
+    } else if (topWord === commands.YES) {
+      this.upload();
     }
   }
 
